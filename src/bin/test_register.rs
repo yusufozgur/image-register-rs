@@ -24,12 +24,15 @@ fn main() {
         }
     };
     let PhaseCorrelationResult {
-        translation_x: final_tx,
-        translation_y: final_ty,
+        translation_x,
+        translation_y,
         cross_power_spectrum,
     } = compute_phase_correlation(&leftimg, &rightimg).unwrap();
 
-    print!("final_tx: {}, final_ty: {}", final_tx, final_ty);
+    print!(
+        "translation_x: {}, translation_y: {}",
+        translation_x, translation_y
+    );
 
     // Save cross power spectrum as an image
     save_spectrum_as_image(
@@ -41,11 +44,16 @@ fn main() {
     .unwrap();
 
     // merge them
+    let registered_img = merge_images(&leftimg, &rightimg, translation_x, translation_y);
+    registered_img.save(test.registered_result).unwrap();
+
+    // save translation x and y to json
 
     // calculate error
 }
 
 use image::{ImageBuffer, Luma};
+use image_register_rs::merge_images;
 use num_complex::Complex;
 use std::path::Path;
 
