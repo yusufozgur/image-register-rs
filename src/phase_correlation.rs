@@ -91,7 +91,7 @@ fn find_peak_index(spatial_data: &[Complex<f64>]) -> usize {
     spatial_data
         .iter()
         .enumerate()
-        .max_by(|(_, a), (_, b)| a.re.partial_cmp(&b.re).unwrap_or(std::cmp::Ordering::Equal))
+        .max_by(|(_, a), (_, b)| a.re.partial_cmp(&b.re).unwrap())
         .map(|(index, _)| index)
         .expect("Cannot find peak index: spatial_data slice is empty")
 }

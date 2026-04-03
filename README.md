@@ -18,5 +18,8 @@ cargo test
 ```
 
 # TODO
-add hamming window option for edge artifacts
-add sub pixel registration option
+- Make api struct based, with defaults
+- add quality control metrics: Peak to secondary peak ratio (PSPR) and Peak Z-score
+- add hanning window option for edge artifacts
+- add sub pixel registration option
+- [OpenCV uses 5x5 weighted centroids for sub-pixel accuracy](https://docs.opencv.org/4.x/d7/df3/group__imgproc__motion.html#ga552420a2ace9ef3fb053cd630fdb4952).
