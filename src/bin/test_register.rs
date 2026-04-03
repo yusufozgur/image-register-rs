@@ -48,9 +48,15 @@ fn main() {
     registered_img.save(test.registered_result).unwrap();
 
     // save translation x and y to json
-    if let Err(e) =
-        save_translation_to_json(translation_x, translation_y, test.registrated_translation)
-    {
+    if let Err(e) = save_translation_to_json(
+        TranslationData {
+            translation_x,
+            translation_y,
+            error_x: (test.x_offset as f64) - translation_x,
+            error_y: (test.y_offset as f64) - translation_y,
+        },
+        test.registrated_metrics,
+    ) {
         eprintln!("Failed to save JSON: {}", e);
     }
 
@@ -100,31 +106,26 @@ fn save_spectrum_as_image(
 
 use serde::Serialize;
 use std::fs::File;
-use std::io::{BufWriter, Write};
+use std::io::BufWriter;
 
 #[derive(Serialize)]
 struct TranslationData {
     translation_x: f64,
     translation_y: f64,
+    error_x: f64,
+    error_y: f64,
 }
 
 /// Serializes translation coordinates to a JSON file at the specified path.
 fn save_translation_to_json<P: AsRef<Path>>(
-    tx: f64,
-    ty: f64,
+    data: TranslationData,
     path: P,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // 1. Initialize the data structure
-    let data = TranslationData {
-        translation_x: tx,
-        translation_y: ty,
-    };
-
-    // 2. Open the file and create a buffered writer
+    // Open the file and create a buffered writer
     let file = File::create(path)?;
     let writer = BufWriter::new(file);
 
-    // 3. Serialize and write to the file
+    // Serialize and write to the file
     // use to_writer_pretty for human-readable output
     serde_json::to_writer_pretty(writer, &data)?;
 

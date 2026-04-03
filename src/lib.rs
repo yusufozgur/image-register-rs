@@ -143,7 +143,7 @@ pub struct TestConfig {
     pub right_crop: String,
     pub registered_ground_truth: String,
     pub cross_power_spectrum: String,
-    pub registrated_translation: String,
+    pub registrated_metrics: String,
     pub registered_result: String,
     pub registered_error: String,
 }
@@ -162,8 +162,8 @@ impl TestConfig {
                 .to_string(),
             cross_power_spectrum: "test_images/translated/at3_1m4_01_cross_power_spectrum.tif"
                 .to_string(),
-            registrated_translation:
-                "test_images/translated/at3_1m4_01_registered_translation.json".to_string(),
+            registrated_metrics: "test_images/translated/at3_1m4_01_registered_metrics.json"
+                .to_string(),
             registered_result: "test_images/translated/at3_1m4_01_registered_result.tif"
                 .to_string(),
             registered_error: "test_images/translated/at3_1m4_01_registered_error.tif".to_string(),
