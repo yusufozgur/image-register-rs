@@ -1,8 +1,8 @@
-use std::process;
-
 use image_register_rs::PhaseCorrelationResult;
 use image_register_rs::TestConfig;
 use image_register_rs::compute_phase_correlation;
+
+use std::process;
 fn main() {
     let test = TestConfig::new();
 
@@ -48,6 +48,11 @@ fn main() {
     registered_img.save(test.registered_result).unwrap();
 
     // save translation x and y to json
+    if let Err(e) =
+        save_translation_to_json(translation_x, translation_y, test.registrated_translation)
+    {
+        eprintln!("Failed to save JSON: {}", e);
+    }
 
     // calculate error
 }
@@ -91,4 +96,37 @@ fn save_spectrum_as_image(
 
     // 4. Save to the specified path
     img_buf.save(Path::new(path))
+}
+
+use serde::Serialize;
+use std::fs::File;
+use std::io::{BufWriter, Write};
+
+#[derive(Serialize)]
+struct TranslationData {
+    translation_x: f64,
+    translation_y: f64,
+}
+
+/// Serializes translation coordinates to a JSON file at the specified path.
+fn save_translation_to_json<P: AsRef<Path>>(
+    tx: f64,
+    ty: f64,
+    path: P,
+) -> Result<(), Box<dyn std::error::Error>> {
+    // 1. Initialize the data structure
+    let data = TranslationData {
+        translation_x: tx,
+        translation_y: ty,
+    };
+
+    // 2. Open the file and create a buffered writer
+    let file = File::create(path)?;
+    let writer = BufWriter::new(file);
+
+    // 3. Serialize and write to the file
+    // use to_writer_pretty for human-readable output
+    serde_json::to_writer_pretty(writer, &data)?;
+
+    Ok(())
 }
