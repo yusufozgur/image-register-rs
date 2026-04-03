@@ -1,23 +1,13 @@
 use image::GenericImageView;
+use image_register_rs::TestConfig;
 use std::process;
-
-const TEST_CROP_WIDTH: u32 = 400;
-const TEST_CROP_HEIGHT: u32 = 400;
-const TEST_X_OFFSET: u32 = 200;
-const TEST_Y_OFFSET: u32 = 0;
-
-const TEST_SOURCE: &str = "test_images/original/at3_1m4_01.tif";
-const TEST_LEFT_CROP: &str = "test_images/translated/at3_1m4_01_left.tif";
-const TEST_RIGHT_CROP: &str = "test_images/translated/at3_1m4_01_right.tif";
-const TEST_REGISTERED_GROUND_TRUTH: &str = "test_images/translated/at3_1m4_01_ground_truth.tif";
-
 fn main() {
-    let path = TEST_SOURCE;
+    let test = TestConfig::new();
 
-    let img = match image::open(path) {
+    let img = match image::open(&test.source) {
         Ok(file) => file,
         Err(error) => {
-            eprintln!("Error: Failed to open image at '{}'.", path);
+            eprintln!("Error: Failed to open image at '{}'.", &test.source);
             eprintln!("Reason: {}", error);
             process::exit(1);
         }
@@ -25,13 +15,13 @@ fn main() {
 
     println!("Dimensions: {:?}", img.dimensions());
 
-    let img_edited_left = img.view(0, 0, TEST_CROP_WIDTH, TEST_CROP_HEIGHT).to_image();
+    let img_edited_left = img.view(0, 0, test.crop_width, test.crop_height).to_image();
     let img_edited_right = img
         .view(
-            0 + TEST_X_OFFSET,
-            0 + TEST_Y_OFFSET,
-            TEST_CROP_WIDTH,
-            TEST_CROP_HEIGHT,
+            0 + test.x_offset,
+            0 + test.y_offset,
+            test.crop_width,
+            test.crop_height,
         )
         .to_image();
 
@@ -39,20 +29,20 @@ fn main() {
         .view(
             0,
             0,
-            TEST_CROP_WIDTH + TEST_X_OFFSET,
-            TEST_CROP_HEIGHT + TEST_Y_OFFSET,
+            test.crop_width + test.x_offset,
+            test.crop_height + test.y_offset,
         )
         .to_image();
 
     img_edited_left
-        .save(TEST_LEFT_CROP)
+        .save(test.left_crop)
         .expect("Failed to save left image");
 
     img_edited_right
-        .save(TEST_RIGHT_CROP)
+        .save(test.right_crop)
         .expect("Failed to save right image");
 
     img_registered_ground_truth
-        .save(TEST_REGISTERED_GROUND_TRUTH)
+        .save(test.registered_ground_truth)
         .expect("Failed to save right image");
 }
