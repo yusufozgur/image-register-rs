@@ -1,25 +1,26 @@
 use image_register_rs::phase_correlation::{PhaseCorrelationResult, compute_phase_correlation};
 use image_register_rs::test_config::TestConfig;
 
-use std::process;
-fn main() {
+fn main() -> () {
     let test = TestConfig::new();
 
     let leftimg = match image::open(&test.left_crop) {
         Ok(file) => file,
         Err(error) => {
-            eprintln!("Error: Failed to open image at '{}'.", &test.left_crop);
-            eprintln!("Reason: {}", error);
-            process::exit(1);
+            panic!(
+                "Error: Failed to open left image at '{}'. Reason: {}",
+                &test.left_crop, error
+            );
         }
     };
 
     let rightimg = match image::open(&test.right_crop) {
         Ok(file) => file,
         Err(error) => {
-            eprintln!("Error: Failed to open image at '{}'.", &test.right_crop);
-            eprintln!("Reason: {}", error);
-            process::exit(1);
+            panic!(
+                "Error: Failed to open left image at '{}'. Reason: {}",
+                &test.right_crop, error
+            );
         }
     };
     let PhaseCorrelationResult {
@@ -32,6 +33,11 @@ fn main() {
         "translation_x: {}, translation_y: {}",
         translation_x, translation_y
     );
+
+    //create parent dirs if not exist
+    fs::create_dir_all(Path::new(&test.cross_power_spectrum).parent().unwrap()).unwrap();
+    fs::create_dir_all(Path::new(&test.registered_result).parent().unwrap()).unwrap();
+    fs::create_dir_all(Path::new(&test.registrated_metrics).parent().unwrap()).unwrap();
 
     // Save cross power spectrum as an image
     save_spectrum_as_image(
@@ -60,6 +66,8 @@ fn main() {
     }
 
     // calculate error
+
+    return ();
 }
 
 use image::{ImageBuffer, Luma};
@@ -104,7 +112,7 @@ fn save_spectrum_as_image(
 }
 
 use serde::Serialize;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::BufWriter;
 
 #[derive(Serialize)]

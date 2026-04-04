@@ -1,6 +1,6 @@
 use image::GenericImageView;
 use image_register_rs::test_config::TestConfig;
-use std::process;
+use std::{fs, path::Path, process};
 fn main() {
     let test = TestConfig::new();
 
@@ -33,6 +33,10 @@ fn main() {
             test.crop_height + test.y_offset,
         )
         .to_image();
+
+    // create parents dir if not exist
+    fs::create_dir_all(Path::new(&test.left_crop).parent().unwrap()).unwrap();
+    fs::create_dir_all(Path::new(&test.right_crop).parent().unwrap()).unwrap();
 
     img_edited_left
         .save(test.left_crop)
