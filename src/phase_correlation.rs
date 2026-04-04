@@ -20,63 +20,30 @@ pub fn compute_phase_correlation(
     }
 
     let n = (width * height) as usize;
-    // rustfft uses these planner and fft objects to perform fft
     let mut planner = FftPlanner::new();
     let fft = planner.plan_fft_forward(n);
     let ifft = planner.plan_fft_inverse(n);
 
-    // Convert images to Complex planes
-    let mut buffer1: Vec<Complex<f64>> = img1
-        .to_luma8()
-        .pixels()
-        .map(|p| Complex::new(p[0] as f64, 0.0))
-        .collect();
-    let mut buffer2: Vec<Complex<f64>> = img2
-        .to_luma8()
-        .pixels()
-        .map(|p| Complex::new(p[0] as f64, 0.0))
-        .collect();
+    let mut buffer1 = img_to_complex_array(img1);
+    let mut buffer2 = img_to_complex_array(img2);
 
     // Perform Forward FFT
     fft.process(&mut buffer1);
     fft.process(&mut buffer2);
 
-    // 3. Compute Cross-Power Spectrum
-    // R = (F * G*) / |F * G*|
-    let mut cross_power_spectrum: Vec<Complex<f64>> = buffer1
-        .iter()
-        .zip(buffer2.iter())
-        .map(|(&f, &g)| {
-            let combined = f * g.conj();
-            let norm = combined.norm();
-            if norm > 0.0 {
-                combined / norm
-            } else {
-                Complex::zero()
-            }
-        })
-        .collect();
+    // Compute Cross-Power Spectrum
+    let mut cross_power_spectrum = compute_normalized_cross_power(&buffer1, &buffer2);
 
-    // 4. Perform Inverse FFT
+    // Perform Inverse FFT to return to spatial domain
     ifft.process(&mut cross_power_spectrum);
 
-    // 5. Find the peak position
-    let mut max_val = -1.0;
-    let mut peak_idx = 0;
+    // Find the peak position
+    let peak_idx = find_peak_index(&cross_power_spectrum);
 
-    for (i, val) in cross_power_spectrum.iter().enumerate() {
-        let mag = val.re; // The peak will be in the real component
-        if mag > max_val {
-            max_val = mag;
-            peak_idx = i;
-        }
-    }
-
-    // 6. Convert index to 2D coordinates
     let ty = (peak_idx / width as usize) as f64;
     let tx = (peak_idx % width as usize) as f64;
 
-    // Adjust for circular shift (wrap-around)
+    // Adjust for circular shift (wrap-around) to handle negative translations
     let final_tx = if tx > (width as f64 / 2.0) {
         tx - width as f64
     } else {
@@ -91,6 +58,40 @@ pub fn compute_phase_correlation(
     Ok(PhaseCorrelationResult {
         translation_x: final_tx,
         translation_y: final_ty,
-        cross_power_spectrum: cross_power_spectrum,
+        cross_power_spectrum,
     })
+}
+
+/// Converts a DynamicImage to a Vec of Complex numbers based on luminance.
+fn img_to_complex_array(img: &DynamicImage) -> Vec<Complex<f64>> {
+    img.to_luma8()
+        .pixels()
+        .map(|p| Complex::new(p[0] as f64, 0.0))
+        .collect()
+}
+
+/// Computes the normalized cross-power spectrum: R = (F * G*) / |F * G*|
+fn compute_normalized_cross_power(f: &[Complex<f64>], g: &[Complex<f64>]) -> Vec<Complex<f64>> {
+    f.iter()
+        .zip(g.iter())
+        .map(|(&f_val, &g_val)| {
+            let combined = f_val * g_val.conj();
+            let norm = combined.norm();
+            if norm > 1e-9 {
+                combined / norm
+            } else {
+                Complex::zero()
+            }
+        })
+        .collect()
+}
+
+/// Identifies the index of the peak value in the real component of the spatial domain.
+fn find_peak_index(spatial_data: &[Complex<f64>]) -> usize {
+    spatial_data
+        .iter()
+        .enumerate()
+        .max_by(|(_, a), (_, b)| a.re.partial_cmp(&b.re).unwrap_or(std::cmp::Ordering::Equal))
+        .map(|(index, _)| index)
+        .expect("Cannot find peak index: spatial_data slice is empty")
 }
