@@ -1,15 +1,17 @@
+use crate::testing::test_config::TestConfig;
 use image::GenericImageView;
-use image_register_rs::test_config::TestConfig;
-use std::{fs, path::Path, process};
-fn main() {
+use std::{fs, path::Path};
+
+pub fn create_test_images() {
     let test = TestConfig::new();
 
     let img = match image::open(&test.source) {
         Ok(file) => file,
         Err(error) => {
-            eprintln!("Error: Failed to open image at '{}'.", &test.source);
-            eprintln!("Reason: {}", error);
-            process::exit(1);
+            panic!(
+                "Error: Failed to open image at '{}'. Reason: {}.",
+                &test.source, error
+            );
         }
     };
 

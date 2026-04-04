@@ -10,7 +10,6 @@ pub struct TestConfig {
     pub cross_power_spectrum: String,
     pub registrated_metrics: String,
     pub registered_result: String,
-    pub registered_error: String,
 }
 
 impl TestConfig {
@@ -25,13 +24,12 @@ impl TestConfig {
             right_crop: "test_images/translated/at3_1m4_01_right.tif".to_string(),
             registered_ground_truth: "test_images/translated/at3_1m4_01_ground_truth.tif"
                 .to_string(),
-            cross_power_spectrum: "test_images/translated/at3_1m4_01_cross_power_spectrum.tif"
+            cross_power_spectrum: "test_images/registered/at3_1m4_01_cross_power_spectrum.tif"
                 .to_string(),
-            registrated_metrics: "test_images/translated/at3_1m4_01_registered_metrics.json"
+            registrated_metrics: "test_images/registered/at3_1m4_01_registered_metrics.json"
                 .to_string(),
-            registered_result: "test_images/translated/at3_1m4_01_registered_result.tif"
+            registered_result: "test_images/registered/at3_1m4_01_registered_result.tif"
                 .to_string(),
-            registered_error: "test_images/translated/at3_1m4_01_registered_error.tif".to_string(),
         }
     }
 }

@@ -1,6 +1,6 @@
-use image_register_rs::phase_correlation::{PhaseCorrelationResult, compute_phase_correlation};
-use image_register_rs::test_config::TestConfig;
-
+use crate::phase_correlation::{PhaseCorrelationResult, compute_phase_correlation};
+use crate::test_config::TestConfig;
+#[test]
 fn main() -> () {
     let test = TestConfig::new();
 
@@ -53,12 +53,14 @@ fn main() -> () {
     registered_img.save(test.registered_result).unwrap();
 
     // save translation x and y to json
+    let error_x = (test.x_offset as f64) - translation_x;
+    let error_y = (test.y_offset as f64) - translation_y;
     if let Err(e) = save_translation_to_json(
         TranslationData {
             translation_x,
             translation_y,
-            error_x: (test.x_offset as f64) - translation_x,
-            error_y: (test.y_offset as f64) - translation_y,
+            error_x: error_x,
+            error_y: error_y,
         },
         test.registrated_metrics,
     ) {
@@ -67,11 +69,18 @@ fn main() -> () {
 
     // calculate error
 
+    // testing
+
+    assert_eq!(translation_x, test.x_offset as f64);
+    assert_eq!(translation_y, test.y_offset as f64);
+    assert_eq!(error_x, 0.0);
+    assert_eq!(error_y, 0.0);
+
     return ();
 }
 
+use crate::merge_image::merge_images;
 use image::{ImageBuffer, Luma};
-use image_register_rs::merge_image::merge_images;
 use num_complex::Complex;
 use std::path::Path;
 
