@@ -8,7 +8,7 @@ pub struct PhaseCorrelationResult {
     pub cross_power_spectrum: Vec<Complex<f64>>,
 }
 
-pub fn compute_phase_correlation(
+pub fn register_phase_correlation(
     img1: &DynamicImage,
     img2: &DynamicImage,
 ) -> Result<PhaseCorrelationResult, String> {

@@ -1,4 +1,4 @@
-use crate::phase_correlation::{PhaseCorrelationResult, compute_phase_correlation};
+use crate::phase_correlation::{PhaseCorrelationResult, register_phase_correlation};
 use crate::testing::test_config::TestConfig;
 
 pub fn test_register() -> () {
@@ -27,7 +27,7 @@ pub fn test_register() -> () {
         translation_x,
         translation_y,
         cross_power_spectrum,
-    } = compute_phase_correlation(&leftimg, &rightimg).unwrap();
+    } = register_phase_correlation(&leftimg, &rightimg).unwrap();
 
     //create parent dirs if not exist
     fs::create_dir_all(Path::new(&test.cross_power_spectrum).parent().unwrap()).unwrap();
