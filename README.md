@@ -49,7 +49,7 @@ pub struct PhaseCorrelationResult {
 cargo test
 ```
 
-# TODO
+## TODO
 - Make api struct based, with defaults
 - add quality control metrics: Peak to secondary peak ratio (PSPR) and Peak Z-score
 - add hanning window option for edge artifacts
