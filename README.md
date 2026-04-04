@@ -1,8 +1,6 @@
 # image-register-rs
 
-This library provides capabilities for image registration via phase correlation.
-
-add informative image
+This rust library provides capabilities for image registration via phase correlation.
 
 <img src="./overview.svg" width="30%" alt="overview image">
 
