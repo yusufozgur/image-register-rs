@@ -1,5 +1,5 @@
 use image::GenericImageView;
-use image_register_rs::TestConfig;
+use image_register_rs::test_config::TestConfig;
 use std::process;
 fn main() {
     let test = TestConfig::new();

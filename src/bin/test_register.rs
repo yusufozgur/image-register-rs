@@ -1,6 +1,5 @@
-use image_register_rs::PhaseCorrelationResult;
-use image_register_rs::TestConfig;
-use image_register_rs::compute_phase_correlation;
+use image_register_rs::phase_correlation::{PhaseCorrelationResult, compute_phase_correlation};
+use image_register_rs::test_config::TestConfig;
 
 use std::process;
 fn main() {
@@ -64,7 +63,7 @@ fn main() {
 }
 
 use image::{ImageBuffer, Luma};
-use image_register_rs::merge_images;
+use image_register_rs::merge_image::merge_images;
 use num_complex::Complex;
 use std::path::Path;
 
