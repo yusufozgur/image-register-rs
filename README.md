@@ -4,7 +4,7 @@ This library provides capabilities for image registration via phase correlation.
 
 add informative image
 
-![Overview](./overview.svg)
+<img src="./overview.svg" width="30%" alt="overview image">
 
 ## API
 
